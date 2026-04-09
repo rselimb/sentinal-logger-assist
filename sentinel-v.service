@@ -1,0 +1,51 @@
+[Unit]
+Description=Sentinel-V Enterprise Security System
+Documentation=https://github.com/your-org/sentinel-v
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+# Security and privilege settings
+User=root
+Group=root
+PrivateTmp=yes
+NoNewPrivileges=no
+
+# Capabilities required for firewall management
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW
+
+# Service execution
+ExecStart=/usr/bin/python3 /opt/sentinel-v/main.py
+ExecStop=/bin/kill -TERM $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=60s
+StartLimitBurst=3
+
+# Timeout settings
+TimeoutStartSec=30
+TimeoutStopSec=10
+
+# Standard output/error logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sentinel-v
+
+# Working directory
+WorkingDirectory=/opt/sentinel-v
+
+# Environment variables
+Environment="PYTHONUNBUFFERED=1"
+Environment="PYTHONDONTWRITEBYTECODE=1"
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=65536
+
+[Install]
+WantedBy=multi-user.target
